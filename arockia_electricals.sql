@@ -16,6 +16,7 @@ CREATE TABLE `users` (
   `password` VARCHAR(255) NOT NULL,
   `role` ENUM('admin','staff') DEFAULT 'admin',
   `last_login` DATETIME DEFAULT NULL,
+  `status` TINYINT(1) DEFAULT 1,
   `created_at` TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB;

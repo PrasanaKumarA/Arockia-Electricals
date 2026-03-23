@@ -56,6 +56,6 @@ define('LOW_STOCK_THRESHOLD', 5);
 // --- Timezone ---
 date_default_timezone_set('Asia/Kolkata');
 
-// --- Error Reporting (set to 0 in production) ---
-error_reporting(0);
-ini_set('display_errors', 0);
+// --- Error Reporting (temporarily enabled to debug 500 error) ---
+error_reporting(E_ALL);
+ini_set('display_errors', 1);

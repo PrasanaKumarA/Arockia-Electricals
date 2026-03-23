@@ -5,7 +5,7 @@
 
 // --- Database Configuration ---
 define('DB_HOST', 'sql100.infinityfree.com');
-define('DB_NAME', 'if0_41455486_XXX');
+define('DB_NAME', 'if0_41455486_arockia_electricals');
 define('DB_USER', 'if0_41455486');
 define('DB_PASS', 'Arockia02');
 define('DB_CHARSET', 'utf8mb4');

@@ -4,16 +4,16 @@
 // ============================================================
 
 // --- Database Configuration ---
-define('DB_HOST', 'localhost');
-define('DB_NAME', 'arockia_electricals');
-define('DB_USER', 'root');
-define('DB_PASS', '');
+define('DB_HOST', 'sql100.infinityfree.com');
+define('DB_NAME', 'if0_41455486_XXX');
+define('DB_USER', 'if0_41455486');
+define('DB_PASS', 'Arockia02');
 define('DB_CHARSET', 'utf8mb4');
 
 // --- Application Settings ---
 define('APP_NAME', 'Arockia Electricals');
 define('APP_TAGLINE', 'Your Trusted Electrical Partner');
-define('APP_URL', 'http://localhost/Arockia-Electricals');
+define('APP_URL', 'http://arockia-electricals.great-site.net');
 define('APP_VERSION', '1.0.0');
 define('APP_CURRENCY', '₹');
 define('APP_CURRENCY_CODE', 'INR');
@@ -57,5 +57,5 @@ define('LOW_STOCK_THRESHOLD', 5);
 date_default_timezone_set('Asia/Kolkata');
 
 // --- Error Reporting (set to 0 in production) ---
-error_reporting(E_ALL);
-ini_set('display_errors', 1);
+error_reporting(0);
+ini_set('display_errors', 0);

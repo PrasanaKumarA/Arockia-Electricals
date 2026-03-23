@@ -17,10 +17,10 @@ jobs:
       - name: Deploy via FTP to InfinityFree
         uses: SamKirkland/FTP-Deploy-Action@4.3.3
         with:
-          server: ${{ secrets.FTP_SERVER }}
-          username: ${{ secrets.FTP_USERNAME }}
-          password: ${{ secrets.FTP_PASSWORD }}
-          server-dir: /htdocs/Arockia-Electricals/
+          server: ftpupload.net
+          username: if0_41455486
+          password: Arockia02
+          server-dir: /htdocs/
           local-dir: ./
           dry-run: false
           exclude: |

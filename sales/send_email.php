@@ -2,6 +2,10 @@
 require_once __DIR__ . '/../includes/auth_check.php';
 require_once __DIR__ . '/../includes/functions.php';
 
+use PHPMailer\PHPMailer\PHPMailer;
+use PHPMailer\PHPMailer\SMTP;
+use PHPMailer\PHPMailer\Exception;
+
 $db = getDB();
 $id = (int)($_GET['id'] ?? 0);
 if (!$id) redirect(APP_URL . '/sales/index.php');
@@ -34,9 +38,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             require_once __DIR__ . '/../libs/phpmailer/SMTP.php';
             require_once __DIR__ . '/../libs/phpmailer/Exception.php';
 
-            use PHPMailer\PHPMailer\PHPMailer;
-            use PHPMailer\PHPMailer\SMTP;
-            use PHPMailer\PHPMailer\Exception;
+
 
             $mail = new PHPMailer(true);
             try {

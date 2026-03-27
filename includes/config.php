@@ -13,7 +13,7 @@ define('DB_CHARSET', 'utf8mb4');
 // --- Application Settings ---
 define('APP_NAME', 'Arockia Electricals');
 define('APP_TAGLINE', 'Your Trusted Electrical Partner');
-define('APP_URL', 'http://arockia-electricals.great-site.net');
+define('APP_URL', 'https://arockia-electricals.great-site.net');
 define('APP_VERSION', '1.0.0');
 define('APP_CURRENCY', '₹');
 define('APP_CURRENCY_CODE', 'INR');

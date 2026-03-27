@@ -223,3 +223,22 @@ function getWhatsAppLink(string $invoiceNumber, string $customerName, float $tot
     
     return "https://wa.me/{$phone}?text=" . urlencode($message);
 }
+
+/**
+ * Get all users (admin management)
+ */
+function getAllUsers(): array {
+    $db = getDB();
+    $stmt = $db->query("SELECT id, name, email, role, status, last_login, created_at FROM users ORDER BY created_at DESC");
+    return $stmt->fetchAll();
+}
+
+/**
+ * Get a single user by ID
+ */
+function getUserById(int $id): ?array {
+    $db = getDB();
+    $stmt = $db->prepare("SELECT id, name, email, role, status FROM users WHERE id = ?");
+    $stmt->execute([$id]);
+    return $stmt->fetch() ?: null;
+}

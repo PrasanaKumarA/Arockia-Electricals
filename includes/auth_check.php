@@ -28,3 +28,27 @@ if (!isset($_SESSION['user_id'])) {
     header('Location: ' . APP_URL . '/auth/login.php');
     exit();
 }
+
+// ============================================================
+// Role helpers — call these AFTER auth_check is included
+// ============================================================
+
+/**
+ * Is the current logged-in user an admin?
+ */
+function isAdmin(): bool {
+    return isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin';
+}
+
+/**
+ * Require admin role — redirects staff to dashboard with a flash error.
+ * Must be called after auth_check.php is included.
+ */
+function requireAdmin(): void {
+    if (!isAdmin()) {
+        // setFlash is in functions.php which may already be included; use session directly if not
+        $_SESSION['flash'] = ['type' => 'error', 'message' => 'Access denied. Admin privileges required.'];
+        header('Location: ' . APP_URL . '/index.php');
+        exit();
+    }
+}

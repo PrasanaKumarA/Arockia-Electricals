@@ -98,6 +98,15 @@ function isParentActive(array $dirs): string {
                     <span>Stock Report</span>
                 </a>
             </li>
+            <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+            <li class="nav-section-title">System</li>
+            <li class="nav-item">
+                <a class="nav-link <?= isParentActive(['users']) ?>" href="<?= APP_URL ?>/users/index.php">
+                    <i class="bi bi-people-fill"></i>
+                    <span>User Management</span>
+                </a>
+            </li>
+            <?php endif; ?>
         </ul>
     </nav>
 

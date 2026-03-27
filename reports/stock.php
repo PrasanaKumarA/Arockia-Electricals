@@ -22,7 +22,7 @@ $products = $stmt->fetchAll();
 // Stock value
 $totalStockValue = array_sum(array_map(fn($p) => $p['stock_quantity'] * $p['purchase_price'], $products));
 $outOfStock = count(array_filter($products, fn($p) => $p['stock_quantity'] == 0));
-$lowStock   = count(array_filter($products, fn($p) => $p['stock_quantity'] > 0 && $p['stock_quantity'] <= $p['minimum_stock']));
+$lowStockCount = count(array_filter($products, fn($p) => $p['stock_quantity'] > 0 && $p['stock_quantity'] <= $p['minimum_stock']));
 
 // CSV Export
 if (isset($_GET['export']) && $_GET['export'] === 'csv') {
@@ -79,7 +79,7 @@ include __DIR__ . '/../includes/header.php';
 <div class="row g-3 mb-4">
     <div class="col-md-3"><div class="stat-card stat-blue"><div class="stat-icon"><i class="bi bi-box-seam"></i></div><div class="stat-value"><?= count($products) ?></div><div class="stat-label">Total Products</div></div></div>
     <div class="col-md-3"><div class="stat-card stat-green"><div class="stat-icon"><i class="bi bi-currency-rupee"></i></div><div class="stat-value"><?= formatCurrency($totalStockValue) ?></div><div class="stat-label">Stock Value</div></div></div>
-    <div class="col-md-3"><div class="stat-card stat-gold"><div class="stat-icon"><i class="bi bi-exclamation-triangle"></i></div><div class="stat-value"><?= $lowStock ?></div><div class="stat-label">Low Stock</div></div></div>
+    <div class="col-md-3"><div class="stat-card stat-gold"><div class="stat-icon"><i class="bi bi-exclamation-triangle"></i></div><div class="stat-value"><?= $lowStockCount ?></div><div class="stat-label">Low Stock</div></div></div>
     <div class="col-md-3"><div class="stat-card stat-red"><div class="stat-icon"><i class="bi bi-x-circle"></i></div><div class="stat-value"><?= $outOfStock ?></div><div class="stat-label">Out of Stock</div></div></div>
 </div>
 

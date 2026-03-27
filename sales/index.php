@@ -49,6 +49,9 @@ include __DIR__ . '/../includes/header.php';
                         <td>
                             <div class="d-flex gap-1">
                                 <a href="<?= APP_URL ?>/sales/view.php?id=<?= $s['id'] ?>" class="btn btn-sm btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                                <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+                                <a href="<?= APP_URL ?>/sales/edit.php?id=<?= $s['id'] ?>" class="btn btn-sm btn-outline-primary" title="Edit"><i class="bi bi-pencil"></i></a>
+                                <?php endif; ?>
                                 <a href="<?= APP_URL ?>/sales/generate_pdf.php?id=<?= $s['id'] ?>" class="btn btn-sm btn-outline-danger" target="_blank" title="PDF"><i class="bi bi-file-earmark-pdf"></i></a>
                                 <button onclick="ajaxDelete('<?= APP_URL ?>/sales/delete.php', <?= $s['id'] ?>, '#row-sale-<?= $s['id'] ?>')" class="btn btn-sm btn-outline-secondary" title="Delete"><i class="bi bi-trash"></i></button>
                             </div>

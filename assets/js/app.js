@@ -20,30 +20,47 @@ if (themeToggle) {
 
 // Sidebar Toggle
 const sidebarToggle = document.getElementById('sidebarToggle');
+const sidebarCloseBtn = document.getElementById('sidebarCloseBtn');
 const sidebar = document.getElementById('sidebar');
-const body = document.body;
+
+function toggleMobileSidebar(show) {
+    if (show) {
+        sidebar.classList.add('show');
+        let overlay = document.querySelector('.sidebar-overlay');
+        if (!overlay) {
+            overlay = document.createElement('div');
+            overlay.className = 'sidebar-overlay';
+            document.body.appendChild(overlay);
+            // Trigger reflow to animate
+            overlay.offsetHeight;
+            overlay.classList.add('show');
+            
+            overlay.addEventListener('click', () => toggleMobileSidebar(false));
+        } else {
+            overlay.classList.add('show');
+        }
+    } else {
+        sidebar.classList.remove('show');
+        const overlay = document.querySelector('.sidebar-overlay');
+        if (overlay) {
+            overlay.classList.remove('show');
+            setTimeout(() => overlay.remove(), 300); // Wait for transition
+        }
+    }
+}
 
 if (sidebarToggle) {
     sidebarToggle.addEventListener('click', () => {
-        if (window.innerWidth <= 768) {
-            sidebar.classList.toggle('show');
-            let overlay = document.querySelector('.sidebar-overlay');
-            if (!overlay) {
-                overlay = document.createElement('div');
-                overlay.className = 'sidebar-overlay';
-                document.body.appendChild(overlay);
-                overlay.addEventListener('click', () => {
-                    sidebar.classList.remove('show');
-                    overlay.remove();
-                });
-            } else {
-                overlay.remove();
-            }
+        if (window.innerWidth <= 991) {
+            toggleMobileSidebar(true);
         } else {
             document.querySelector('.wrapper').classList.toggle('sidebar-collapsed');
             document.querySelector('.main-content').classList.toggle('expanded');
         }
     });
+}
+if (sidebarCloseBtn) {
+    sidebarCloseBtn.addEventListener('click', () => toggleMobileSidebar(false));
 }
 
 // Auto-dismiss alerts
@@ -133,7 +150,7 @@ function numFmt(n) {
 // PWA Service worker registration
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/Arockia-Electricals/service-worker.js')
+        navigator.serviceWorker.register('/service-worker.js')
             .catch(() => {});
     });
 }

@@ -20,6 +20,7 @@ function isParentActive(array $dirs): string {
             <span class="brand-name">Arockia</span>
             <span class="brand-sub">Electricals</span>
         </div>
+        <button type="button" class="mobile-close-btn" id="sidebarCloseBtn"><i class="bi bi-x-lg"></i></button>
     </div>
 
     <nav class="sidebar-nav">

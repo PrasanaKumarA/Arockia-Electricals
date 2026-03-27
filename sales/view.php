@@ -27,6 +27,9 @@ include __DIR__ . '/../includes/header.php';
     <h1 class="page-title"><i class="bi bi-receipt me-2 text-primary"></i><?= sanitize($sale['invoice_number']) ?></h1>
     <div class="d-flex gap-2">
         <button onclick="window.print()" class="btn btn-outline-secondary"><i class="bi bi-printer me-1"></i>Print</button>
+        <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+        <a href="<?= APP_URL ?>/sales/edit.php?id=<?= $sale['id'] ?>" class="btn btn-primary"><i class="bi bi-pencil me-1"></i>Edit</a>
+        <?php endif; ?>
         <a href="<?= APP_URL ?>/sales/generate_pdf.php?id=<?= $sale['id'] ?>" class="btn btn-danger" target="_blank"><i class="bi bi-file-earmark-pdf me-1"></i>PDF</a>
         <a href="<?= $whatsAppLink ?>" class="btn btn-success" target="_blank"><i class="bi bi-whatsapp me-1"></i>WhatsApp</a>
         <a href="<?= APP_URL ?>/sales/send_email.php?id=<?= $sale['id'] ?>" class="btn btn-info"><i class="bi bi-envelope me-1"></i>Email</a>

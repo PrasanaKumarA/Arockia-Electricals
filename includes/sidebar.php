@@ -28,7 +28,7 @@ function isParentActive(array $dirs): string {
             <!-- Dashboard -->
             <li class="nav-item">
                 <a class="nav-link <?= (($currentDir === 'Arockia-Electricals' || $currentPage === 'index.php') && $currentDir !== 'products' && $currentDir !== 'sales' && $currentDir !== 'purchase' && $currentDir !== 'customers' && $currentDir !== 'suppliers' && $currentDir !== 'reports') ? 'active' : '' ?>" 
-                   href="<?= APP_URL ?>/index.php">
+                   href="<?= APP_URL ?>/index.php" title="Dashboard">
                     <i class="bi bi-speedometer2"></i>
                     <span>Dashboard</span>
                 </a>
@@ -38,7 +38,7 @@ function isParentActive(array $dirs): string {
 
             <!-- Products -->
             <li class="nav-item">
-                <a class="nav-link <?= isParentActive(['products']) ?>" href="<?= APP_URL ?>/products/index.php">
+                <a class="nav-link <?= isParentActive(['products']) ?>" href="<?= APP_URL ?>/products/index.php" title="Products">
                     <i class="bi bi-box-seam"></i>
                     <span>Products</span>
                 </a>
@@ -46,7 +46,7 @@ function isParentActive(array $dirs): string {
 
             <!-- Suppliers -->
             <li class="nav-item">
-                <a class="nav-link <?= isParentActive(['suppliers']) ?>" href="<?= APP_URL ?>/suppliers/index.php">
+                <a class="nav-link <?= isParentActive(['suppliers']) ?>" href="<?= APP_URL ?>/suppliers/index.php" title="Suppliers">
                     <i class="bi bi-truck"></i>
                     <span>Suppliers</span>
                 </a>
@@ -54,7 +54,7 @@ function isParentActive(array $dirs): string {
 
             <!-- Purchase -->
             <li class="nav-item">
-                <a class="nav-link <?= isParentActive(['purchase']) ?>" href="<?= APP_URL ?>/purchase/index.php">
+                <a class="nav-link <?= isParentActive(['purchase']) ?>" href="<?= APP_URL ?>/purchase/index.php" title="Purchases">
                     <i class="bi bi-cart-plus"></i>
                     <span>Purchases</span>
                 </a>
@@ -64,7 +64,7 @@ function isParentActive(array $dirs): string {
 
             <!-- Customers -->
             <li class="nav-item">
-                <a class="nav-link <?= isParentActive(['customers']) ?>" href="<?= APP_URL ?>/customers/index.php">
+                <a class="nav-link <?= isParentActive(['customers']) ?>" href="<?= APP_URL ?>/customers/index.php" title="Customers">
                     <i class="bi bi-people"></i>
                     <span>Customers</span>
                 </a>
@@ -72,7 +72,7 @@ function isParentActive(array $dirs): string {
 
             <!-- Sales / Invoices -->
             <li class="nav-item">
-                <a class="nav-link <?= isParentActive(['sales']) ?>" href="<?= APP_URL ?>/sales/index.php">
+                <a class="nav-link <?= isParentActive(['sales']) ?>" href="<?= APP_URL ?>/sales/index.php" title="Sales & Invoices">
                     <i class="bi bi-receipt"></i>
                     <span>Sales & Invoices</span>
                 </a>
@@ -82,19 +82,19 @@ function isParentActive(array $dirs): string {
 
             <!-- Reports -->
             <li class="nav-item">
-                <a class="nav-link <?= isActive('reports', 'sales.php') ?>" href="<?= APP_URL ?>/reports/sales.php">
+                <a class="nav-link <?= isActive('reports', 'sales.php') ?>" href="<?= APP_URL ?>/reports/sales.php" title="Sales Report">
                     <i class="bi bi-bar-chart-line"></i>
                     <span>Sales Report</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link <?= isActive('reports', 'profit.php') ?>" href="<?= APP_URL ?>/reports/profit.php">
+                <a class="nav-link <?= isActive('reports', 'profit.php') ?>" href="<?= APP_URL ?>/reports/profit.php" title="Profit Report">
                     <i class="bi bi-graph-up-arrow"></i>
                     <span>Profit Report</span>
                 </a>
             </li>
             <li class="nav-item">
-                <a class="nav-link <?= isActive('reports', 'stock.php') ?>" href="<?= APP_URL ?>/reports/stock.php">
+                <a class="nav-link <?= isActive('reports', 'stock.php') ?>" href="<?= APP_URL ?>/reports/stock.php" title="Stock Report">
                     <i class="bi bi-clipboard-data"></i>
                     <span>Stock Report</span>
                 </a>
@@ -102,7 +102,7 @@ function isParentActive(array $dirs): string {
             <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
             <li class="nav-section-title">System</li>
             <li class="nav-item">
-                <a class="nav-link <?= isParentActive(['users']) ?>" href="<?= APP_URL ?>/users/index.php">
+                <a class="nav-link <?= isParentActive(['users']) ?>" href="<?= APP_URL ?>/users/index.php" title="User Management">
                     <i class="bi bi-people-fill"></i>
                     <span>User Management</span>
                 </a>

@@ -495,21 +495,103 @@ body {
 
 /* --- Mobile Responsiveness (Offcanvas Sidebar) --- */
 @media (max-width: 991px) {
-    .sidebar { transform: translateX(-100%); width: 280px; box-shadow: var(--shadow-lg); }
+    .sidebar {
+        transform: translateX(-100%);
+        width: min(280px, 85vw);
+        box-shadow: var(--shadow-lg);
+        overflow-y: auto;
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
+    }
     .sidebar.show { transform: translateX(0); }
-    .mobile-close-btn { display: block; }
-    .main-content { margin-left: 0; width: 100%; }
-    .content-area { padding: 16px; }
-    .stat-card { padding: 20px; }
-    .top-navbar { padding: 0 16px; }
-    .page-title { font-size: 1.25rem; }
+    .mobile-close-btn { display: flex; align-items: center; justify-content: center; }
+    .main-content { margin-left: 0 !important; width: 100%; }
+    .content-area { padding: 12px; }
+    .stat-card { padding: 16px; }
+    .stat-value { font-size: 1.4rem; }
+    .top-navbar { padding: 0 12px; }
+    .page-title { font-size: 1.15rem; }
+    .card-header { padding: 14px 16px; font-size: 0.95rem; }
+    .card-body { padding: 16px; }
+    /* Stack header row on mobile */
+    .d-flex.justify-content-between { flex-wrap: wrap; gap: 10px; }
+    /* DataTables mobile fixes */
+    .dataTables_wrapper .dataTables_filter,
+    .dataTables_wrapper .dataTables_length { width: 100%; text-align: left; }
+    .dataTables_wrapper .dataTables_filter input { width: 100%; max-width: 100%; }
+    /* Prevent nav items from overflowing */
+    .navbar-nav.flex-row { gap: 8px !important; }
+    /* Notification dropdown width cap */
+    .notify-dropdown { min-width: min(300px, 90vw) !important; right: 0; left: auto; }
+    /* Breadcrumb truncation */
+    .breadcrumb { flex-wrap: nowrap; overflow: hidden; }
+    .breadcrumb-item { white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 120px; }
 }
 
+/* Extra small screens (iPhone SE, 375px) */
+@media (max-width: 420px) {
+    .stat-value { font-size: 1.2rem; }
+    .stat-icon { width: 38px; height: 38px; font-size: 1.1rem; }
+    .stat-card { padding: 14px; }
+    .btn { padding: 8px 14px; font-size: 0.85rem; }
+    .page-title { font-size: 1rem; }
+    .content-area { padding: 10px; }
+    .card-body { padding: 12px; }
+}
+
+/* Tablet (768px – 991px) */
+@media (min-width: 768px) and (max-width: 991px) {
+    .content-area { padding: 20px; }
+    .stat-value { font-size: 1.6rem; }
+}
+
+/* Remove horizontal scroll from the page */
+html, body { max-width: 100%; overflow-x: hidden; }
+.wrapper { overflow-x: hidden; }
+.table-responsive { -webkit-overflow-scrolling: touch; }
+
+/* Sidebar overlay */
 .sidebar-overlay {
-    display: none; position: fixed; inset: 0; background: rgba(0,0,0,0.5);
-    backdrop-filter: blur(2px); z-index: 1035; opacity: 0; transition: opacity 0.3s ease;
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.55);
+    backdrop-filter: blur(3px);
+    -webkit-backdrop-filter: blur(3px);
+    z-index: 1035;
+    opacity: 0;
+    transition: opacity 0.3s ease;
 }
 .sidebar-overlay.show { display: block; opacity: 1; }
+
+/* Touch-friendly buttons on mobile */
+@media (hover: none) and (pointer: coarse) {
+    .btn { min-height: 44px; }
+    .nav-link { min-height: 44px; }
+    .dropdown-item { padding-top: 12px; padding-bottom: 12px; }
+}
+
+/* DataTables responsive search + length row */
+.dataTables_wrapper .dataTables_filter label,
+.dataTables_wrapper .dataTables_length label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+}
+.dataTables_wrapper .dataTables_filter input {
+    margin-left: 0 !important;
+    flex: 1;
+    min-width: 150px;
+}
+
+/* Sticky table header */
+.table-sticky-header thead th {
+    position: sticky;
+    top: 0;
+    z-index: 2;
+    background: var(--body-bg);
+}
 
 /* --- Animations --- */
 @keyframes fadeInUp {
@@ -517,3 +599,8 @@ body {
     to { opacity: 1; transform: translateY(0); }
 }
 .card, .stat-card { animation: fadeInUp 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+
+/* Prevent animation stutter on mobile */
+@media (prefers-reduced-motion: reduce) {
+    *, ::before, ::after { animation-duration: 0.01ms !important; transition-duration: 0.01ms !important; }
+}

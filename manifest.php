@@ -4,28 +4,42 @@ header('Content-Type: application/manifest+json; charset=utf-8');
 header('Cache-Control: public, max-age=604800');
 require_once __DIR__ . '/includes/config.php';
 
+$base = APP_URL;
 $manifest = [
     'name'             => APP_NAME,
     'short_name'       => 'Arockia',
     'description'      => 'Inventory Management & Billing System for Arockia Electricals',
-    'start_url'        => '/',
+    'start_url'        => $base . '/index.php',
+    'scope'            => $base . '/',
     'display'          => 'standalone',
-    'background_color' => '#1e3a5f',
-    'theme_color'      => '#1e3a5f',
+    'background_color' => '#030712',
+    'theme_color'      => '#4f46e5',
     'orientation'      => 'portrait-primary',
     'categories'       => ['business', 'productivity'],
     'icons'            => [
         [
-            'src'     => APP_URL . '/assets/icons/icon-192.png',
+            'src'     => $base . '/assets/icons/icon-192.png',
             'sizes'   => '192x192',
             'type'    => 'image/png',
-            'purpose' => 'any maskable',
+            'purpose' => 'any',
         ],
         [
-            'src'     => APP_URL . '/assets/icons/icon-512.png',
+            'src'     => $base . '/assets/icons/icon-192.png',
+            'sizes'   => '192x192',
+            'type'    => 'image/png',
+            'purpose' => 'maskable',
+        ],
+        [
+            'src'     => $base . '/assets/icons/icon-512.png',
             'sizes'   => '512x512',
             'type'    => 'image/png',
-            'purpose' => 'any maskable',
+            'purpose' => 'any',
+        ],
+        [
+            'src'     => $base . '/assets/icons/icon-512.png',
+            'sizes'   => '512x512',
+            'type'    => 'image/png',
+            'purpose' => 'maskable',
         ],
     ],
 ];

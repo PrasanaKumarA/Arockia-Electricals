@@ -33,25 +33,29 @@ if (savedSidebarState === 'collapsed' && window.innerWidth > 991) {
 function toggleMobileSidebar(show) {
     if (show) {
         sidebar.classList.add('show');
+        document.body.style.overflow = 'hidden';
+        document.body.style.position = 'fixed';
+        document.body.style.width = '100%';
         let overlay = document.querySelector('.sidebar-overlay');
         if (!overlay) {
             overlay = document.createElement('div');
             overlay.className = 'sidebar-overlay';
             document.body.appendChild(overlay);
-            // Trigger reflow to animate
             overlay.offsetHeight;
             overlay.classList.add('show');
-            
             overlay.addEventListener('click', () => toggleMobileSidebar(false));
         } else {
             overlay.classList.add('show');
         }
     } else {
         sidebar.classList.remove('show');
+        document.body.style.overflow = '';
+        document.body.style.position = '';
+        document.body.style.width = '';
         const overlay = document.querySelector('.sidebar-overlay');
         if (overlay) {
             overlay.classList.remove('show');
-            setTimeout(() => overlay.remove(), 300); // Wait for transition
+            setTimeout(() => overlay.remove(), 300);
         }
     }
 }
@@ -127,31 +131,60 @@ function confirmAction(message, callback) {
     if (confirm(message)) callback();
 }
 
-// AJAX Delete
-function ajaxDelete(url, id, rowSelector, message = 'Are you sure you want to delete this?') {
-    confirmAction(message, () => {
-        fetch(url, {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
-            body: `id=${id}&action=delete`
-        })
-        .then(r => r.json())
-        .then(data => {
-            if (data.success) {
-                const row = document.querySelector(rowSelector);
-                if (row) {
-                    row.style.transition = 'opacity 0.3s';
-                    row.style.opacity = '0';
-                    setTimeout(() => row.remove(), 300);
-                }
-                showToast(data.message || 'Deleted successfully');
-            } else {
-                showToast(data.message || 'Error deleting record', 'error');
-            }
-        })
-        .catch(() => showToast('Network error', 'error'));
+// CSRF token helper
+function getCsrfToken() {
+    const meta = document.querySelector('meta[name="csrf-token"]');
+    return meta ? meta.content : '';
+}
+
+// Modal-based AJAX Delete (with CSRF protection)
+function ajaxDelete(url, id, rowSelector, message) {
+    message = message || 'Are you sure you want to delete this record? This cannot be undone.';
+    const modal = document.getElementById('deleteModal');
+    const msgEl = document.getElementById('deleteModalMessage');
+    const confirmBtn = document.getElementById('deleteModalConfirm');
+    if (!modal || !confirmBtn) {
+        // Fallback if modal not available
+        if (!confirm(message)) return;
+        _doDelete(url, id, rowSelector);
+        return;
+    }
+    if (msgEl) msgEl.textContent = message;
+    const bsModal = new bootstrap.Modal(modal);
+    bsModal.show();
+    const handler = () => {
+        confirmBtn.removeEventListener('click', handler);
+        bsModal.hide();
+        _doDelete(url, id, rowSelector);
+    };
+    confirmBtn.addEventListener('click', handler);
+}
+
+function _doDelete(url, id, rowSelector) {
+    const btn = document.getElementById('deleteModalConfirm');
+    if (btn) { btn.disabled = true; btn.innerHTML = '<span class="spinner-border spinner-border-sm me-1"></span>Deleting...'; }
+    fetch(url, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+        body: `id=${encodeURIComponent(id)}&action=delete&csrf_token=${encodeURIComponent(getCsrfToken())}`
+    })
+    .then(r => r.json())
+    .then(data => {
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-trash me-1"></i>Delete'; }
+        if (data.success) {
+            const row = document.querySelector(rowSelector);
+            if (row) { row.style.transition = 'opacity 0.3s'; row.style.opacity = '0'; setTimeout(() => row.remove(), 300); }
+            showToast(data.message || 'Deleted successfully');
+        } else {
+            showToast(data.message || 'Error deleting record', 'error');
+        }
+    })
+    .catch(() => {
+        if (btn) { btn.disabled = false; btn.innerHTML = '<i class="bi bi-trash me-1"></i>Delete'; }
+        showToast('Network error. Please try again.', 'error');
     });
 }
+
 
 // Format currency
 function formatCurrency(amount) {
@@ -163,10 +196,26 @@ function numFmt(n) {
     return parseFloat(n || 0).toFixed(2);
 }
 
-// PWA Service worker registration
+// PWA Service Worker registration
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('/service-worker.js')
-            .catch(() => {});
+        navigator.serviceWorker.register('/service-worker.js', { scope: '/' })
+            .then(reg => console.log('[SW] Registered, scope:', reg.scope))
+            .catch(err => console.warn('[SW] Registration failed:', err));
     });
 }
+
+// PWA Install prompt
+let deferredPrompt;
+window.addEventListener('beforeinstallprompt', e => {
+    e.preventDefault();
+    deferredPrompt = e;
+    const btn = document.getElementById('pwaInstallBtn');
+    if (btn) { btn.style.display = 'inline-flex'; }
+});
+document.addEventListener('click', e => {
+    if (e.target && e.target.id === 'pwaInstallBtn' && deferredPrompt) {
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.then(() => { deferredPrompt = null; });
+    }
+});

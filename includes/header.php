@@ -2,12 +2,18 @@
 // Shared header
 $pageTitle = isset($pageTitle) ? $pageTitle . ' | ' . APP_NAME : APP_NAME;
 $flash = getFlash();
+// CSRF token
+if (empty($_SESSION['csrf_token'])) {
+    $_SESSION['csrf_token'] = bin2hex(random_bytes(32));
+}
+$csrfToken = $_SESSION['csrf_token'];
 ?>
 <!DOCTYPE html>
 <html lang="en" data-bs-theme="light">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
+    <meta name="csrf-token" content="<?= $csrfToken ?>">
     <meta name="description" content="Arockia Electricals - Inventory Management & Billing System">
     <title><?= $pageTitle ?></title>
     <!-- Bootstrap 5 -->
@@ -112,5 +118,33 @@ $flash = getFlash();
         </div>
         <?php endif; ?>
 
+        <!-- Delete Confirmation Modal (global) -->
+        <div class="modal fade" id="deleteModal" tabindex="-1" aria-labelledby="deleteModalLabel" aria-hidden="true">
+          <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content border-0 shadow-lg">
+              <div class="modal-header border-0 pb-0">
+                <div class="d-flex align-items-center gap-3">
+                  <div style="width:48px;height:48px;border-radius:12px;background:rgba(239,68,68,.15);display:flex;align-items:center;justify-content:center;">
+                    <i class="bi bi-exclamation-triangle-fill text-danger fs-4"></i>
+                  </div>
+                  <div>
+                    <h5 class="modal-title fw-bold mb-0" id="deleteModalLabel">Confirm Delete</h5>
+                    <p class="text-muted small mb-0">This action cannot be undone</p>
+                  </div>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
+              </div>
+              <div class="modal-body pt-3">
+                <p id="deleteModalMessage" class="mb-0">Are you sure you want to delete this record?</p>
+              </div>
+              <div class="modal-footer border-0">
+                <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal">Cancel</button>
+                <button type="button" class="btn btn-danger" id="deleteModalConfirm">
+                  <i class="bi bi-trash me-1"></i>Delete
+                </button>
+              </div>
+            </div>
+          </div>
+        </div>
         <!-- Page Content starts below -->
         <div class="content-area p-4">

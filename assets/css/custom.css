@@ -80,7 +80,8 @@ body {
 /* --- Sidebar --- */
 .sidebar {
     width: var(--sidebar-width);
-    min-height: 100vh;
+    height: 100vh;
+    height: 100dvh;
     background: var(--sidebar-bg);
     backdrop-filter: blur(16px);
     -webkit-backdrop-filter: blur(16px);
@@ -94,6 +95,13 @@ body {
     border-right: 1px solid var(--border);
 }
 
+/* Sidebar custom scrollbar */
+.sidebar-nav::-webkit-scrollbar { width: 4px; }
+.sidebar-nav::-webkit-scrollbar-track { background: transparent; }
+.sidebar-nav::-webkit-scrollbar-thumb { background: var(--border); border-radius: 4px; }
+.sidebar-nav::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+.sidebar-nav { scrollbar-width: thin; scrollbar-color: var(--border) transparent; }
+
 .sidebar-brand {
     display: flex;
     align-items: center;
@@ -101,6 +109,7 @@ body {
     padding: 24px;
     min-height: var(--topbar-height);
     background-color: var(--sidebar-bg);
+    flex-shrink: 0;
 }
 
 .sidebar-logo {
@@ -133,6 +142,10 @@ body {
     flex: 1;
     padding: 16px;
     overflow-y: auto;
+    overflow-x: hidden;
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+    min-height: 0;
 }
 
 .sidebar-nav .nav-link {
@@ -182,6 +195,7 @@ body {
     padding: 20px;
     border-top: 1px solid var(--border);
     background-color: var(--sidebar-bg);
+    flex-shrink: 0;
 }
 
 .sidebar-user { display: flex; align-items: center; gap: 12px; }
@@ -493,15 +507,42 @@ body {
 .login-label { color: var(--text-secondary); font-weight: 600; }
 .login-btn { width: 100%; padding: 14px; font-size: 1rem; border-radius: 10px; }
 
+/* --- Select2 Dark Theme Compatibility --- */
+[data-bs-theme="dark"] .select2-container--bootstrap-5 .select2-selection {
+    background-color: var(--card-bg);
+    border-color: var(--border);
+    color: var(--text-primary);
+}
+[data-bs-theme="dark"] .select2-container--bootstrap-5 .select2-dropdown {
+    background-color: var(--card-bg);
+    border-color: var(--border);
+}
+[data-bs-theme="dark"] .select2-container--bootstrap-5 .select2-results__option {
+    color: var(--text-primary);
+}
+[data-bs-theme="dark"] .select2-container--bootstrap-5 .select2-results__option--highlighted {
+    background-color: var(--primary);
+    color: #fff;
+}
+[data-bs-theme="dark"] .select2-container--bootstrap-5 .select2-search__field {
+    background-color: var(--card-bg);
+    color: var(--text-primary);
+    border-color: var(--border);
+}
+[data-bs-theme="dark"] .select2-container--bootstrap-5 .select2-selection__rendered {
+    color: var(--text-primary);
+}
+
+/* --- Invoice / Purchase item tables --- */
+#saleItemsTable td, #purchaseItemsTable td { vertical-align: middle; }
+#saleItemsTable select, #purchaseItemsTable select { min-width: 160px; }
+
 /* --- Mobile Responsiveness (Offcanvas Sidebar) --- */
 @media (max-width: 991px) {
     .sidebar {
         transform: translateX(-100%);
         width: min(280px, 85vw);
         box-shadow: var(--shadow-lg);
-        overflow-y: auto;
-        -webkit-overflow-scrolling: touch;
-        overscroll-behavior: contain;
     }
     .sidebar.show { transform: translateX(0); }
     .mobile-close-btn { display: flex; align-items: center; justify-content: center; }

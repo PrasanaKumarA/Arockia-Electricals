@@ -9,6 +9,9 @@ $breadcrumb = ['Dashboard' => APP_URL . '/index.php', 'Products' => APP_URL . '/
 $errors = [];
 $categories = getCategories();
 
+// Fetch existing brands for Select2 preload
+$brands = $db->query("SELECT DISTINCT brand FROM products WHERE brand IS NOT NULL AND brand != '' ORDER BY brand")->fetchAll(PDO::FETCH_COLUMN);
+
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $name          = sanitize($_POST['product_name'] ?? '');
     $category_id   = (int)($_POST['category_id'] ?? 0);
@@ -33,6 +36,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         if ($check->fetch()) $errors[] = 'SKU already exists.';
     }
 
+    // Check duplicate product name
+    $dupCheck = $db->prepare("SELECT id FROM products WHERE product_name = ? AND status = 1");
+    $dupCheck->execute([$name]);
+    if ($dupCheck->fetch()) $errors[] = "Product '$name' already exists.";
+
     if (empty($errors)) {
         $stmt = $db->prepare("INSERT INTO products (product_name, category_id, brand, sku, purchase_price, selling_price, stock_quantity, minimum_stock, unit, description) VALUES (?,?,?,?,?,?,?,?,?,?)");
         $stmt->execute([$name, $category_id ?: null, $brand, $sku ?: null, $purchase_price, $selling_price, $stock_quantity, $minimum_stock, $unit, $description]);
@@ -41,6 +49,12 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         redirect(APP_URL . '/products/index.php');
     }
 }
+
+// Add Select2 CSS to head
+$extraHead = '
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/select2-bootstrap-5-theme@1.3.0/dist/select2-bootstrap-5-theme.min.css">
+';
 
 include __DIR__ . '/../includes/header.php';
 ?>
@@ -66,7 +80,8 @@ include __DIR__ . '/../includes/header.php';
             <div class="row g-3">
                 <div class="col-md-8">
                     <label class="form-label">Product Name <span class="text-danger">*</span></label>
-                    <input type="text" name="product_name" class="form-control" value="<?= htmlspecialchars($_POST['product_name'] ?? '') ?>" required>
+                    <input type="text" name="product_name" id="productNameInput" class="form-control" value="<?= htmlspecialchars($_POST['product_name'] ?? '') ?>" required placeholder="Start typing to search or add new...">
+                    <div class="form-text">Type a product name. If it exists, it will autocomplete.</div>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">SKU / Code</label>
@@ -83,7 +98,13 @@ include __DIR__ . '/../includes/header.php';
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">Brand</label>
-                    <input type="text" name="brand" class="form-control" value="<?= htmlspecialchars($_POST['brand'] ?? '') ?>" placeholder="e.g. APC, Exide">
+                    <select name="brand" id="brandSelect" class="form-select">
+                        <option value="">Select or type a brand</option>
+                        <?php foreach ($brands as $b): ?>
+                            <option value="<?= htmlspecialchars($b) ?>" <?= ($_POST['brand'] ?? '') === $b ? 'selected' : '' ?>><?= htmlspecialchars($b) ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                    <div class="form-text">Select existing or type to create new brand.</div>
                 </div>
                 <div class="col-md-4">
                     <label class="form-label">Unit</label>
@@ -128,4 +149,83 @@ include __DIR__ . '/../includes/header.php';
     </div>
 </div>
 
-<?php include __DIR__ . '/../includes/footer.php'; ?>
+<?php
+$appUrl = APP_URL;
+$extraScript = "
+<script src=\"https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js\"></script>
+<script>
+$(document).ready(function() {
+    // --- Brand Select2: searchable + tags (allows new) ---
+    $('#brandSelect').select2({
+        theme: 'bootstrap-5',
+        tags: true,
+        placeholder: 'Select or type a brand',
+        allowClear: true,
+        createTag: function(params) {
+            var term = $.trim(params.term);
+            if (term === '') return null;
+            return { id: term, text: term, newTag: true };
+        },
+        templateResult: function(data) {
+            if (data.newTag) {
+                return $('<span><i class=\"bi bi-plus-circle me-1 text-success\"></i>Create: <strong>' + data.text + '</strong></span>');
+            }
+            return data.text;
+        }
+    });
+
+    // --- Product Name autocomplete via Select2 AJAX ---
+    var productNameInput = $('#productNameInput');
+    // Create a hidden select for Select2 and keep the text input in sync
+    var productSelect = $('<select id=\"productNameSelect\"></select>');
+    productSelect.insertAfter(productNameInput);
+    productNameInput.hide();
+
+    productSelect.select2({
+        theme: 'bootstrap-5',
+        tags: true,
+        placeholder: 'Start typing product name...',
+        allowClear: true,
+        minimumInputLength: 1,
+        ajax: {
+            url: '{$appUrl}/products/ajax_lookup.php',
+            dataType: 'json',
+            delay: 300,
+            data: function(params) {
+                return { action: 'search_products', q: params.term };
+            },
+            processResults: function(data) {
+                return { results: data.results.map(function(item) {
+                    return { id: item.text, text: item.text };
+                })};
+            }
+        },
+        createTag: function(params) {
+            var term = $.trim(params.term);
+            if (term === '') return null;
+            return { id: term, text: term, newTag: true };
+        },
+        templateResult: function(data) {
+            if (data.newTag) {
+                return $('<span><i class=\"bi bi-plus-circle me-1 text-success\"></i>New: <strong>' + data.text + '</strong></span>');
+            }
+            return data.text;
+        }
+    });
+
+    // Pre-populate if form had a value
+    var existingVal = productNameInput.val();
+    if (existingVal) {
+        var option = new Option(existingVal, existingVal, true, true);
+        productSelect.append(option).trigger('change');
+    }
+
+    // Sync Select2 value back to hidden input
+    productSelect.on('change', function() {
+        productNameInput.val($(this).val());
+    });
+});
+</script>
+";
+include __DIR__ . '/../includes/footer.php';
+?>

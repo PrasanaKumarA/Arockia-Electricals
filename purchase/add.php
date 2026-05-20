@@ -74,8 +74,36 @@ include __DIR__ . '/../includes/header.php';
 <?php endif; ?>
 
 <form method="POST" id="purchaseForm">
+
+<!-- 1. PURCHASE ITEMS (FIRST) -->
+<div class="card mb-4">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <span><i class="bi bi-list-ul me-2"></i>Purchase Items</span>
+        <button type="button" class="btn btn-sm btn-primary" id="addPurchaseItemBtn"><i class="bi bi-plus-lg me-1"></i>Add Item</button>
+    </div>
+    <div class="card-body p-0">
+        <div class="table-responsive">
+            <table class="table mb-0" id="purchaseItemsTable">
+                <thead>
+                    <tr>
+                        <th style="min-width:200px">Product</th>
+                        <th style="width:100px">Quantity</th>
+                        <th style="width:150px">Purchase Price (₹)</th>
+                        <th style="width:110px">Total</th>
+                        <th style="width:50px"></th>
+                    </tr>
+                </thead>
+                <tbody id="itemsBody"></tbody>
+            </table>
+        </div>
+        <div class="p-3 text-center text-muted small" id="noItemsMsg">
+            <i class="bi bi-info-circle me-1"></i>Click "Add Item" to start adding products
+        </div>
+    </div>
+</div>
+
+<!-- 2. PURCHASE DETAILS + SUPPLIER -->
 <div class="row g-3 mb-4">
-    <!-- Purchase Info -->
     <div class="col-lg-8">
         <div class="card">
             <div class="card-header"><i class="bi bi-info-circle me-2"></i>Purchase Details</div>
@@ -125,23 +153,23 @@ include __DIR__ . '/../includes/header.php';
         </div>
     </div>
 
-    <!-- Summary -->
+    <!-- 3. SUMMARY -->
     <div class="col-lg-4">
         <div class="card h-100">
             <div class="card-header"><i class="bi bi-calculator me-2"></i>Summary</div>
             <div class="card-body">
-                <div class="mb-3">
+                <div class="d-flex justify-content-between mb-3">
                     <span class="text-muted">Total Items:</span>
-                    <strong id="totalItems" class="float-end">0</strong>
+                    <strong id="totalItems">0</strong>
                 </div>
-                <div class="mb-3">
+                <div class="d-flex justify-content-between mb-3">
                     <span class="text-muted">Total Qty:</span>
-                    <strong id="totalQty" class="float-end">0</strong>
+                    <strong id="totalQty">0</strong>
                 </div>
                 <hr>
-                <div class="mb-2">
-                    <span class="">Grand Total:</span>
-                    <strong class="float-end text-primary fs-5" id="grandTotal">₹0.00</strong>
+                <div class="d-flex justify-content-between mb-2">
+                    <span class="fw-bold">Grand Total:</span>
+                    <strong class="text-primary fs-5" id="grandTotal">₹0.00</strong>
                 </div>
                 <button type="submit" class="btn btn-success w-100 mt-3">
                     <i class="bi bi-check-lg me-1"></i>Save Purchase
@@ -151,80 +179,84 @@ include __DIR__ . '/../includes/header.php';
     </div>
 </div>
 
-<!-- Items -->
-<div class="card">
-    <div class="card-header d-flex justify-content-between align-items-center">
-        <span><i class="bi bi-list-ul me-2"></i>Purchase Items</span>
-        <button type="button" class="btn btn-sm btn-primary" onclick="addItem()"><i class="bi bi-plus-lg me-1"></i>Add Item</button>
-    </div>
-    <div class="card-body p-0">
-        <div class="table-responsive">
-            <table class="table mb-0" id="itemsTable">
-                <thead>
-                    <tr><th>Product</th><th>Quantity</th><th>Purchase Price (₹)</th><th>Total</th><th></th></tr>
-                </thead>
-                <tbody id="itemsBody">
-                    <!-- rows added dynamically -->
-                </tbody>
-            </table>
-        </div>
-    </div>
-</div>
 </form>
 
 <?php
 $productsJson = json_encode(array_map(fn($p) => ['id' => $p['id'], 'name' => $p['product_name'], 'price' => $p['purchase_price']], $products));
 $extraScript = "
 <script>
-const allProducts = $productsJson;
-let itemCount = 0;
+var allProducts = $productsJson;
+var itemCount = 0;
 
-function addItem(pid=0, qty=1, price=0) {
+document.getElementById('addPurchaseItemBtn').addEventListener('click', function() { addItem(); });
+
+function addItem(pid, qty, price) {
+    pid = pid || 0;
+    qty = qty || 1;
+    price = price || 0;
     itemCount++;
-    const opts = allProducts.map(p => '<option value=\"'+p.id+'\" data-price=\"'+p.price+'\"'+(p.id==pid?' selected':'')+'>'+p.name+'</option>').join('');
-    const row = \`<tr id=\"item-\${itemCount}\">
-        <td><select name=\"items[\${itemCount}][product_id]\" class=\"form-select form-select-sm product-select\" onchange=\"onProductChange(this)\" required>
-            <option value=\"\">Select Product</option>\${opts}</select></td>
-        <td><input type=\"number\" name=\"items[\${itemCount}][quantity]\" class=\"form-control form-control-sm item-qty\" value=\"\${qty}\" min=\"1\" oninput=\"calcRow(this)\" required></td>
-        <td><div class=\"input-group input-group-sm\"><span class=\"input-group-text\">₹</span>
-            <input type=\"number\" name=\"items[\${itemCount}][purchase_price]\" class=\"form-control item-price\" value=\"\${price}\" step=\"0.01\" min=\"0\" oninput=\"calcRow(this)\" required></div></td>
-        <td><span class=\"item-total fw-semibold\">₹0.00</span></td>
-        <td><button type=\"button\" onclick=\"removeItem('item-\${itemCount}')\" class=\"btn btn-sm btn-outline-danger\"><i class=\"bi bi-trash\"></i></button></td>
-    </tr>\`;
+    document.getElementById('noItemsMsg').style.display = 'none';
+    var opts = '<option value=\"\">Select Product</option>';
+    allProducts.forEach(function(p) {
+        opts += '<option value=\"'+p.id+'\" data-price=\"'+p.price+'\"'+(p.id==pid?' selected':'')+'>'+p.name+'</option>';
+    });
+    var row = '<tr id=\"item-'+itemCount+'\">' +
+        '<td><select name=\"items['+itemCount+'][product_id]\" class=\"form-select form-select-sm product-select\" onchange=\"onProductChange(this)\" required>'+opts+'</select></td>' +
+        '<td><input type=\"number\" name=\"items['+itemCount+'][quantity]\" class=\"form-control form-control-sm item-qty\" value=\"'+qty+'\" min=\"1\" oninput=\"calcRow(this)\" required></td>' +
+        '<td><div class=\"input-group input-group-sm\"><span class=\"input-group-text\">₹</span><input type=\"number\" name=\"items['+itemCount+'][purchase_price]\" class=\"form-control item-price\" value=\"'+price+'\" step=\"0.01\" min=\"0\" oninput=\"calcRow(this)\" required></div></td>' +
+        '<td><span class=\"item-total fw-semibold\">₹0.00</span></td>' +
+        '<td><button type=\"button\" onclick=\"removeItem('+itemCount+')\" class=\"btn btn-sm btn-outline-danger\"><i class=\"bi bi-trash\"></i></button></td>' +
+    '</tr>';
     document.getElementById('itemsBody').insertAdjacentHTML('beforeend', row);
-    const sel = document.querySelector('#item-'+itemCount+' .product-select');
-    onProductChange(sel);
+    var sel = document.querySelector('#item-'+itemCount+' .product-select');
+    if (sel && pid) onProductChange(sel);
     calcTotals();
 }
+
 function onProductChange(sel) {
-    const opt = sel.options[sel.selectedIndex];
-    const price = opt ? opt.dataset.price : 0;
-    const row = sel.closest('tr');
+    var opt = sel.options[sel.selectedIndex];
+    var price = opt ? opt.dataset.price : 0;
+    var row = sel.closest('tr');
     if (price > 0) row.querySelector('.item-price').value = price;
     calcRow(sel);
 }
+
 function calcRow(el) {
-    const row = el.closest('tr');
-    const qty = parseFloat(row.querySelector('.item-qty').value)||0;
-    const price = parseFloat(row.querySelector('.item-price').value)||0;
-    row.querySelector('.item-total').textContent = '₹' + (qty*price).toFixed(2);
+    var row = el.closest('tr');
+    var qty = parseFloat(row.querySelector('.item-qty').value) || 0;
+    var price = parseFloat(row.querySelector('.item-price').value) || 0;
+    row.querySelector('.item-total').textContent = '₹' + (qty * price).toFixed(2);
     calcTotals();
 }
-function removeItem(id) { document.getElementById(id).remove(); calcTotals(); }
+
+function removeItem(n) {
+    var el = document.getElementById('item-'+n);
+    if (el) el.remove();
+    calcTotals();
+    if (document.querySelectorAll('#itemsBody tr').length === 0) {
+        document.getElementById('noItemsMsg').style.display = '';
+    }
+}
+
 function calcTotals() {
-    let total=0, qty=0, count=0;
-    document.querySelectorAll('#itemsBody tr').forEach(row => {
-        const q = parseFloat(row.querySelector('.item-qty')?.value)||0;
-        const p = parseFloat(row.querySelector('.item-price')?.value)||0;
-        total += q*p; qty += q; count++;
+    var total = 0, qty = 0, count = 0;
+    document.querySelectorAll('#itemsBody tr').forEach(function(row) {
+        var q = parseFloat(row.querySelector('.item-qty').value) || 0;
+        var p = parseFloat(row.querySelector('.item-price').value) || 0;
+        total += q * p;
+        qty += q;
+        count++;
     });
-    document.getElementById('grandTotal').textContent = '₹'+total.toFixed(2);
+    document.getElementById('grandTotal').textContent = '₹' + total.toFixed(2);
     document.getElementById('totalQty').textContent = qty;
     document.getElementById('totalItems').textContent = count;
 }
+
 document.getElementById('paymentStatusSel').addEventListener('change', function() {
-    document.getElementById('paidAmountRow').style.display = this.value==='partial' ? '' : 'none';
+    document.getElementById('paidAmountRow').style.display = this.value === 'partial' ? '' : 'none';
 });
+
+// Start with one item row
 addItem();
 </script>
 ";

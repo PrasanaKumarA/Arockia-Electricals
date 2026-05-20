@@ -314,9 +314,20 @@ body {
     border-bottom: 1px solid var(--border);
     position: sticky; top: 0; z-index: 1020;
     padding: 0 24px;
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    flex-wrap: nowrap !important;
 }
 [data-bs-theme="dark"] .top-navbar {
     background: rgba(15, 23, 42, 0.85);
+}
+.top-navbar .navbar-nav {
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap !important;
 }
 
 .sidebar-toggle { color: var(--text-primary); margin-right: 16px; }
@@ -412,6 +423,60 @@ body {
 }
 .table td { border-color: var(--border); vertical-align: middle; padding: 16px; font-size: 0.9rem; }
 .table-hover tbody tr:hover { background: var(--sidebar-hover); }
+
+/* --- Premium Dropdown Menus --- */
+.dropdown-menu {
+    border: 1px solid var(--border);
+    border-radius: var(--radius-md) !important;
+    background-color: var(--card-bg);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    box-shadow: var(--shadow-lg) !important;
+    padding: 8px 0;
+    transition: opacity 0.15s ease, transform 0.15s ease;
+    border-color: rgba(99, 102, 241, 0.15) !important;
+}
+
+[data-bs-theme="dark"] .dropdown-menu {
+    background-color: rgba(15, 23, 42, 0.95);
+    border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.dropdown-item {
+    font-size: 0.9rem;
+    font-weight: 500;
+    padding: 10px 20px;
+    color: var(--text-primary);
+    transition: var(--transition);
+}
+
+.dropdown-item:hover {
+    background-color: var(--sidebar-hover);
+    color: var(--primary) !important;
+}
+
+[data-bs-theme="dark"] .dropdown-item:hover {
+    background-color: rgba(30, 41, 59, 0.8);
+}
+
+.dropdown-item.text-danger:hover {
+    background-color: rgba(239, 68, 68, 0.1) !important;
+    color: var(--danger) !important;
+}
+
+.dropdown-header {
+    font-weight: 700;
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+    color: var(--text-muted);
+    padding: 8px 20px;
+}
+
+.dropdown-divider {
+    border-top: 1px solid var(--border);
+    margin: 6px 0;
+}
 
 /* DataTables Dropdown UI Fix */
 .dataTables_length select {
@@ -539,6 +604,7 @@ body {
 
 /* --- Mobile Responsiveness (Offcanvas Sidebar) --- */
 @media (max-width: 991px) {
+    .top-navbar nav[aria-label="breadcrumb"] { display: none !important; }
     .sidebar {
         transform: translateX(-100%);
         width: min(280px, 85vw);

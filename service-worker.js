@@ -3,7 +3,7 @@
 // Cache-first for assets, network-first for PHP pages
 // ============================================================
 
-const CACHE_NAME = 'arockia-v1.0.1';
+const CACHE_NAME = 'arockia-v1.0.2';
 const STATIC_CACHE = [
     '/',
     '/auth/login.php',

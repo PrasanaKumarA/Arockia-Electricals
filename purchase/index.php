@@ -32,7 +32,7 @@ include __DIR__ . '/../includes/header.php';
                 </thead>
                 <tbody>
                     <?php foreach ($purchases as $i => $p): ?>
-                    <tr>
+                    <tr id="row-purchase-<?= $p['id'] ?>">
                         <td><?= $i + 1 ?></td>
                         <td><strong><?= sanitize($p['invoice_number']) ?></strong></td>
                         <td><?= sanitize($p['supplier_name'] ?? '—') ?></td>
@@ -45,7 +45,13 @@ include __DIR__ . '/../includes/header.php';
                             </span>
                         </td>
                         <td>
-                            <a href="<?= APP_URL ?>/purchase/view.php?id=<?= $p['id'] ?>" class="btn btn-sm btn-outline-primary"><i class="bi bi-eye"></i></a>
+                            <div class="d-flex gap-1">
+                                <a href="<?= APP_URL ?>/purchase/view.php?id=<?= $p['id'] ?>" class="btn btn-sm btn-outline-primary" title="View"><i class="bi bi-eye"></i></a>
+                                <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+                                <a href="<?= APP_URL ?>/purchase/edit.php?id=<?= $p['id'] ?>" class="btn btn-sm btn-outline-primary" title="Edit"><i class="bi bi-pencil"></i></a>
+                                <button onclick="ajaxDelete('<?= APP_URL ?>/purchase/delete.php', <?= $p['id'] ?>, '#row-purchase-<?= $p['id'] ?>', 'Are you sure you want to delete this purchase? This will decrease product stock.')" class="btn btn-sm btn-outline-danger" title="Delete"><i class="bi bi-trash"></i></button>
+                                <?php endif; ?>
+                            </div>
                         </td>
                     </tr>
                     <?php endforeach; ?>

@@ -20,9 +20,16 @@ $pageTitle = 'Purchase ' . $purchase['invoice_number'];
 $breadcrumb = ['Purchases' => APP_URL . '/purchase/index.php', $purchase['invoice_number'] => ''];
 include __DIR__ . '/../includes/header.php';
 ?>
-<div class="d-flex justify-content-between mb-4">
-    <h1 class="page-title"><i class="bi bi-receipt me-2"></i><?= sanitize($purchase['invoice_number']) ?></h1>
-    <a href="<?= APP_URL ?>/purchase/index.php" class="btn btn-outline-secondary"><i class="bi bi-arrow-left me-1"></i>Back</a>
+<div class="d-flex justify-content-between align-items-center mb-4 no-print">
+    <h1 class="page-title"><i class="bi bi-receipt me-2 text-primary"></i><?= sanitize($purchase['invoice_number']) ?></h1>
+    <div class="d-flex gap-2">
+        <button onclick="window.print()" class="btn btn-outline-secondary"><i class="bi bi-printer me-1"></i>Print</button>
+        <?php if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'admin'): ?>
+        <a href="<?= APP_URL ?>/purchase/edit.php?id=<?= $purchase['id'] ?>" class="btn btn-primary"><i class="bi bi-pencil me-1"></i>Edit</a>
+        <button onclick="deletePurchase(<?= $purchase['id'] ?>)" class="btn btn-danger"><i class="bi bi-trash me-1"></i>Delete</button>
+        <?php endif; ?>
+        <a href="<?= APP_URL ?>/purchase/index.php" class="btn btn-outline-secondary"><i class="bi bi-arrow-left"></i></a>
+    </div>
 </div>
 <div class="card">
     <div class="card-body">
@@ -63,4 +70,29 @@ include __DIR__ . '/../includes/header.php';
         </table>
     </div>
 </div>
-<?php include __DIR__ . '/../includes/footer.php'; ?>
+<?php
+$extraScript = "
+<script>
+function deletePurchase(id) {
+    if (confirm('Are you sure you want to delete this purchase? This will decrease product stock.')) {
+        fetch('" . APP_URL . "/purchase/delete.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+            body: 'id=' + id + '&csrf_token=' + encodeURIComponent('" . $csrfToken . "')
+        })
+        .then(r => r.json())
+        .then(data => {
+            if (data.success) {
+                alert(data.message || 'Deleted successfully');
+                window.location.href = '" . APP_URL . "/purchase/index.php';
+            } else {
+                alert(data.message || 'Error deleting purchase');
+            }
+        })
+        .catch(() => alert('Network error. Please try again.'));
+    }
+}
+</script>
+";
+include __DIR__ . '/../includes/footer.php';
+?>

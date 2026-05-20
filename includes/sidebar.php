@@ -119,8 +119,5 @@ function isParentActive(array $dirs): string {
                 <span class="sidebar-user-role"><?= ucfirst($_SESSION['user_role'] ?? 'Admin') ?></span>
             </div>
         </div>
-        <a href="<?= APP_URL ?>/auth/logout.php" class="btn btn-sm btn-outline-danger logout-btn" title="Logout">
-            <i class="bi bi-box-arrow-right"></i>
-        </a>
     </div>
 </aside>

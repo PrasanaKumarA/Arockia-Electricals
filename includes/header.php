@@ -27,8 +27,8 @@ $csrfToken = $_SESSION['csrf_token'];
     <link rel="stylesheet" href="https://cdn.datatables.net/1.13.7/css/dataTables.bootstrap5.min.css">
     <!-- Custom CSS -->
     <link rel="stylesheet" href="<?= APP_URL ?>/assets/css/custom.css">
-    <!-- PWA Manifest (served via JSON to bypass InfinityFree PHP injection) -->
-    <link rel="manifest" href="<?= APP_URL ?>/manifest.json">
+    <!-- PWA Manifest (served via JSON with credentials to bypass InfinityFree cookie check) -->
+    <link rel="manifest" href="<?= APP_URL ?>/manifest.json" crossorigin="use-credentials">
     <meta name="theme-color" content="#1e3a5f">
     <link rel="icon" href="<?= APP_URL ?>/assets/icons/icon-192.png">
     <?php if (isset($extraHead)) echo $extraHead; ?>

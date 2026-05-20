@@ -1,0 +1,38 @@
+{
+  "name": "Arockia Electricals",
+  "short_name": "Arockia",
+  "description": "Inventory Management & Billing System for Arockia Electricals",
+  "start_url": "./index.php",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#030712",
+  "theme_color": "#4f46e5",
+  "orientation": "portrait-primary",
+  "categories": ["business", "productivity"],
+  "icons": [
+    {
+      "src": "./assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "maskable"
+    },
+    {
+      "src": "./assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "./assets/icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}

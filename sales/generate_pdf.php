@@ -45,7 +45,7 @@ $pdf->SetAutoPageBreak(true, 25);
 // --- Company Header ---
 $logoPath = __DIR__ . '/../assets/images/logo.png';
 if (file_exists($logoPath)) {
-    $pdf->Image($logoPath, 12, 8, 22, 22);
+    $pdf->Image($logoPath, 12, 8, 22, 22, 'JPEG');
 }
 $pdf->SetFont('Arial', 'B', 16);
 $pdf->SetTextColor(30, 58, 95);

@@ -158,6 +158,7 @@ $(document).ready(function() {
     // --- Brand Select2: searchable + tags (allows new) ---
     $('#brandSelect').select2({
         theme: 'bootstrap-5',
+        width: '100%',
         tags: true,
         placeholder: 'Select or type a brand',
         allowClear: true,
@@ -176,13 +177,13 @@ $(document).ready(function() {
 
     // --- Product Name autocomplete via Select2 AJAX ---
     var productNameInput = $('#productNameInput');
-    // Create a hidden select for Select2 and keep the text input in sync
-    var productSelect = $('<select id=\"productNameSelect\"></select>');
+    var productSelect = $('<select id=\"productNameSelect\" class=\"form-select\"></select>');
     productSelect.insertAfter(productNameInput);
     productNameInput.hide();
 
     productSelect.select2({
         theme: 'bootstrap-5',
+        width: '100%',
         tags: true,
         placeholder: 'Start typing product name...',
         allowClear: true,
